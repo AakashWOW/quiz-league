@@ -13,7 +13,19 @@ const io = new Server(server, {
   }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+const speedPoints = [
+  20,
+  18,
+  15,
+  12,
+  10,
+  8,
+  6,
+  4,
+  2
+];
 
 const questions = JSON.parse(
   fs.readFileSync("./questions.json", "utf8")
@@ -28,6 +40,7 @@ const state = {
   timerRunning: false,
   teams: {},
   answers: {},
+  answerOrder: {},
   leaderboard: [],
   showAnswer: false
 };
@@ -38,7 +51,9 @@ for (let i = 1; i <= 16; i++) {
   connected: false,
   score: 0,
   socketId: null,
-  lastAnswer: null
+  lastAnswer: null,
+  pendingAnswer: null,
+  submittedAnswer: null
 };
 }
 
@@ -139,21 +154,16 @@ broadcastState();
 
     state.answers[state.currentQuestion][teamId] = answer;
 
-    const correct =
-answer === questions[state.currentQuestion].answer;
+    if(!state.answerOrder[state.currentQuestion]){
 
-if(correct){
-
-    state.teams[teamId].score++;
-
-    state.teams[teamId].lastAnswer =
-    "correct";
-
-}else{
-
-    state.teams[teamId].lastAnswer =
-    "wrong";
+    state.answerOrder[state.currentQuestion] = [];
 }
+
+state.answerOrder[state.currentQuestion]
+.push(teamId);
+
+state.teams[teamId].submittedAnswer =
+answer;
 
     broadcastState();
   });
@@ -162,6 +172,8 @@ if(correct){
 
     state.started = true;
     state.currentQuestion = 0;
+    state.answerOrder = {};
+    state.showAnswer = false;
 
     sendQuestion();
     startTimer();
@@ -173,6 +185,62 @@ if(correct){
 
     state.showAnswer = true;
 
+    const correctTeams = [];
+
+    Object.values(state.teams)
+    .forEach(team => {
+
+        if(
+            team.submittedAnswer ===
+            questions[state.currentQuestion].answer
+        ){
+            correctTeams.push(team);
+        }
+
+    });
+
+    correctTeams.sort((a,b) => {
+
+        const aRank =
+        state.answerOrder[state.currentQuestion]
+        .indexOf(a.id);
+
+        const bRank =
+        state.answerOrder[state.currentQuestion]
+        .indexOf(b.id);
+
+        return aRank - bRank;
+
+    });
+
+    correctTeams.forEach((team,index) => {
+
+        const points =
+        speedPoints[index] || 1;
+
+        team.score += points;
+
+    });
+
+    Object.values(state.teams)
+    .forEach(team => {
+
+        if(
+            team.submittedAnswer ===
+            questions[state.currentQuestion].answer
+        ){
+
+            team.lastAnswer = "correct";
+
+        }else if(
+            team.submittedAnswer !== null
+        ){
+
+            team.lastAnswer = "wrong";
+        }
+
+    });
+
     broadcastState();
 
 });
@@ -180,6 +248,7 @@ if(correct){
   socket.on("admin-next-question", () => {
 
     state.currentQuestion++;
+    state.answerOrder[state.currentQuestion] = [];
 
     if (state.currentQuestion >= questions.length) {
 
@@ -195,7 +264,10 @@ if(correct){
     Object.values(state.teams)
 .forEach(team => {
     team.lastAnswer = null;
+team.pendingAnswer = null;
+team.submittedAnswer = null;
 });
+
 state.showAnswer = false;
     sendQuestion();
     startTimer();
@@ -229,7 +301,9 @@ state.showAnswer = false;
     Object.values(state.teams).forEach(team => {
 
         team.score = 0;
-        team.lastAnswer = null;
+team.lastAnswer = null;
+team.pendingAnswer = null;
+team.submittedAnswer = null;
 
         // KEEP TEAMS CONNECTED
         // Do NOT touch:
