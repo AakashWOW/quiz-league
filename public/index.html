@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz League</title>
+
+<link rel="stylesheet" href="style.css">
+
+<script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Quiz League</h1>
+
+<div id="joinScreen">
+
+<h2>Select Team</h2>
+
+<select id="teamSelect">
+<option value="">Choose Team</option>
+</select>
+
+<button onclick="joinTeam()">Join</button>
+
+</div>
+
+<div id="quizScreen" style="display:none">
+
+<div class="topbar">
+<div id="teamLabel"></div>
+<div id="timer">15</div>
+</div>
+
+<div class="card">
+
+<h2 id="questionNumber"></h2>
+
+<p id="questionText"></p>
+
+<div id="options"></div>
+
+</div>
+
+<div class="scoreBox">
+Score: <span id="score">0</span>
+</div>
+
+</div>
+
+<div id="finishedScreen" style="display:none">
+
+<h2>Quiz Finished</h2>
+
+<div id="leaderboard"></div>
+
+</div>
+
+</div>
+
+<script src="client.js"></script>
+
+</body>
+</html>

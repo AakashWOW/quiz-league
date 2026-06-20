@@ -1,0 +1,157 @@
+body{
+font-family:Arial,sans-serif;
+background:#f4f4f4;
+margin:0;
+padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:1200px;
+    margin:auto;
+    padding:10px;
+}
+
+h1{
+text-align:center;
+}
+
+.card{
+background:white;
+padding:20px;
+margin-top:20px;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+button{
+padding:10px 20px;
+cursor:pointer;
+margin:5px;
+}
+
+.optionBtn{
+display:block;
+width:100%;
+margin-top:10px;
+text-align:left;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+margin-bottom:15px;
+font-weight:bold;
+}
+
+#timer{
+font-size:24px;
+color:red;
+}
+
+.scoreBox{
+margin-top:15px;
+font-size:20px;
+font-weight:bold;
+}
+
+.teamRow{
+padding:8px;
+border-bottom:1px solid #ddd;
+}
+
+select{
+padding:10px;
+width:100%;
+margin-bottom:10px;
+}
+
+.team-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:15px;
+  margin-top:20px;
+}
+
+.team-card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  transition:.3s;
+}
+
+.team-card.correct{
+  background:#22c55e;
+  color:white;
+  box-shadow:0 0 20px rgba(34,197,94,.7);
+}
+
+.team-card.wrong{
+  background:#ef4444;
+  color:white;
+  box-shadow:0 0 20px rgba(239,68,68,.7);
+}
+
+.team-icon{
+  font-size:40px;
+  margin:10px 0;
+}
+
+.team-score{
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.result-image{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+}
+
+.team-icon{
+    font-size:50px;
+    min-height:90px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+@media(max-width:768px){
+
+    h1{
+        font-size:24px;
+    }
+
+    button{
+        width:100%;
+        margin-top:10px;
+    }
+
+    .team-grid{
+        grid-template-columns:
+        repeat(2,1fr);
+    }
+
+}
+
+.team-card.connected{
+  background:#3b82f6;
+  color:white;
+  box-shadow:0 0 20px rgba(59,130,246,.7);
+}
+
+.admin-option{
+    background:#f5f5f5;
+    padding:12px;
+    margin:8px 0;
+    border-radius:10px;
+    font-size:18px;
+}
+
+.correct-option{
+    background:#4CAF50;
+    color:white;
+    font-weight:bold;
+}
