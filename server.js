@@ -3,6 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
+const ADMIN_PASSWORD = "cyberworldcupquiz";
 
 const app = express();
 const server = http.createServer(app);
@@ -30,6 +31,50 @@ const speedPoints = [
 const questions = JSON.parse(
   fs.readFileSync("./questions.json", "utf8")
 );
+
+app.use("/admin.html", (req, res, next) => {
+
+    const auth = req.headers.authorization;
+
+    if (!auth) {
+
+        res.setHeader(
+            "WWW-Authenticate",
+            'Basic realm="Admin Area"'
+        );
+
+        return res.status(401).send(
+            "Authentication required"
+        );
+    }
+
+    const encoded =
+    auth.split(" ")[1];
+
+    const decoded =
+    Buffer.from(
+        encoded,
+        "base64"
+    ).toString();
+
+    const [username, password] =
+    decoded.split(":");
+
+    if (password !== ADMIN_PASSWORD) {
+
+        res.setHeader(
+            "WWW-Authenticate",
+            'Basic realm="Admin Area"'
+        );
+
+        return res.status(401).send(
+            "Wrong password"
+        );
+    }
+
+    next();
+
+});
 
 app.use(express.static(path.join(__dirname, "public")));
 
