@@ -35,6 +35,9 @@ const questions = JSON.parse(
 
 app.use("/admin.html", (req, res, next) => {
 
+    console.log("ADMIN PAGE REQUESTED");
+
+
     const auth = req.headers.authorization;
 
     if (!auth) {
@@ -435,4 +438,5 @@ socket.on("admin-resume", () => {
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
 
