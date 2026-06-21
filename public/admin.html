@@ -11,8 +11,26 @@
 
 <script src="/socket.io/socket.io.js"></script>
 
+<script>
+function checkPassword(){
+
+    const password = prompt(
+        "Enter Admin Password"
+    );
+
+    if(password !== "cyberworldcupquiz"){
+
+        alert("Incorrect Password");
+
+        window.location.href = "/";
+
+    }
+
+}
+</script>
+
 </head>
-<body>
+<body onload="checkPassword()">
 
 <div class="container">
 
