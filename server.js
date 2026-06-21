@@ -4,6 +4,7 @@ const { Server } = require("socket.io");
 const fs = require("fs");
 const path = require("path");
 const ADMIN_PASSWORD = "cyberworldcupquiz";
+const ADMIN_TOKEN = "cyberworldcup-admin-token";
 
 const app = express();
 const server = http.createServer(app);
@@ -145,6 +146,20 @@ function startTimer() {
 
 io.on("connection", (socket) => {
 
+  socket.isAdmin = false;
+
+socket.on("admin-auth", (token) => {
+
+    if(token === ADMIN_TOKEN){
+
+        socket.isAdmin = true;
+
+        console.log("Admin authenticated");
+
+    }
+
+});
+
   socket.on("join-team", (teamId) => {
 
     console.log("Join request:", teamId);
@@ -216,6 +231,8 @@ answer;
 
   socket.on("admin-start", () => {
 
+    if(!socket.isAdmin) return;
+
     state.started = true;
     state.currentQuestion = 0;
     state.answerOrder = {};
@@ -228,6 +245,8 @@ answer;
   });
 
   socket.on("admin-show-answer", () => {
+
+    if(!socket.isAdmin) return;
 
     state.showAnswer = true;
 
@@ -306,6 +325,8 @@ Object.values(state.teams)
 
   socket.on("admin-next-question", () => {
 
+    if(!socket.isAdmin) return;
+
     state.currentQuestion++;
     state.answerOrder[state.currentQuestion] = [];
 
@@ -349,6 +370,8 @@ state.showAnswer = false;
 
   socket.on("admin-reset", () => {
 
+    if(!socket.isAdmin) return;
+
     console.log("LEAGUE RESET");
 
     clearInterval(timerHandle);
@@ -384,6 +407,8 @@ team.submittedAnswer = null;
 
 socket.on("admin-pause", () => {
 
+    if(!socket.isAdmin) return;
+
     clearInterval(timerHandle);
 
     state.timerRunning = false;
@@ -391,6 +416,8 @@ socket.on("admin-pause", () => {
 });
 
 socket.on("admin-resume", () => {
+
+    if(!socket.isAdmin) return;
 
     if (state.timerRunning) return;
 

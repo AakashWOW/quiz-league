@@ -1,5 +1,10 @@
 const socket=io();
 
+socket.emit(
+    "admin-auth",
+    "cyberworldcup-admin-token"
+);
+
 function startQuiz(){
 
     socket.emit("admin-start");
