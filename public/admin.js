@@ -158,7 +158,7 @@ if(team.lastAnswer === "wrong"){
         <div>${status}</div>
 
         <div class="team-score">
-            ${team.score} pts
+            ${team.roundScore} pts
         </div>
     </div>
     `;

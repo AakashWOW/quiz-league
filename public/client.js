@@ -4,6 +4,9 @@ let currentTeam = null;
 
 let joinedSuccessfully = false;
 
+let currentAnswer = null;
+let selectedAnswer = null;
+
 for(let i=1;i<=16;i++){
 
     const option=document.createElement("option");
@@ -44,10 +47,15 @@ socket.on("question",(data)=>{
     document.getElementById("questionText")
     .textContent=data.question;
 
+    currentAnswer = data.answer;
+    selectedAnswer = null;
+
     const options=
     document.getElementById("options");
 
     options.innerHTML="";
+
+    selectedAnswer = null;
 
     data.options.forEach((opt,index)=>{
 
@@ -60,10 +68,12 @@ socket.on("question",(data)=>{
 
         btn.onclick=()=>{
 
-            socket.emit(
-                "submit-answer",
-                index
-            );
+            selectedAnswer = index;
+
+socket.emit(
+    "submit-answer",
+    index
+);
 
             document
             .querySelectorAll(".optionBtn")
@@ -85,9 +95,58 @@ socket.on("state-update",(state)=>{
     if(currentTeam){
 
         document.getElementById("score")
-        .textContent=
+        .textContent =
         state.teams[currentTeam].score;
     }
+
+    if(state.showAnswer){
+
+        const buttons =
+        document.querySelectorAll(".optionBtn");
+
+        buttons.forEach((btn,index)=>{
+
+            if(
+    index === currentAnswer &&
+    selectedAnswer === currentAnswer
+){
+
+    if(
+        !btn.querySelector(".answer-overlay")
+    ){
+
+        btn.innerHTML += `
+        <img
+          src="/images/correct.png"
+          class="answer-overlay"
+        >
+        `;
+    }
+}
+
+            if(
+    selectedAnswer !== null &&
+    selectedAnswer === index &&
+    selectedAnswer !== currentAnswer
+){
+
+    if(
+        !btn.querySelector(".answer-overlay")
+    ){
+
+        btn.innerHTML += `
+        <img
+          src="/images/wrong.png"
+          class="answer-overlay"
+        >
+        `;
+    }
+}
+
+        });
+
+    }
+
 });
 
 socket.on("quiz-finished",(leaderboard)=>{

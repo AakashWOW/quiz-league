@@ -50,6 +50,7 @@ for (let i = 1; i <= 16; i++) {
   id: i,
   connected: false,
   score: 0,
+  roundScore: 0,
   socketId: null,
   lastAnswer: null,
   pendingAnswer: null,
@@ -215,12 +216,25 @@ answer;
 
     correctTeams.forEach((team,index) => {
 
-        const points =
-        speedPoints[index] || 1;
+    const points =
+    speedPoints[index] || 1;
 
-        team.score += points;
+    team.score += points;
+    team.roundScore = points;
 
-    });
+});
+
+Object.values(state.teams)
+.forEach(team => {
+
+    if(
+        team.submittedAnswer !==
+        questions[state.currentQuestion].answer
+    ){
+        team.roundScore = 0;
+    }
+
+});
 
     Object.values(state.teams)
     .forEach(team => {
@@ -264,8 +278,9 @@ answer;
     Object.values(state.teams)
 .forEach(team => {
     team.lastAnswer = null;
-team.pendingAnswer = null;
-team.submittedAnswer = null;
+    team.pendingAnswer = null;
+    team.submittedAnswer = null;
+    team.roundScore = 0;
 });
 
 state.showAnswer = false;
@@ -301,6 +316,7 @@ state.showAnswer = false;
     Object.values(state.teams).forEach(team => {
 
         team.score = 0;
+team.roundScore = 0;
 team.lastAnswer = null;
 team.pendingAnswer = null;
 team.submittedAnswer = null;
