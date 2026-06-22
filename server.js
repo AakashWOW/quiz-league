@@ -97,14 +97,15 @@ const state = {
 for (let i = 1; i <= 16; i++) {
   state.teams[i] = {
   id: i,
+  name: "",
   connected: false,
-  score: 0,
-  roundScore: 0,
-  socketId: null,
-  lastAnswer: null,
-  pendingAnswer: null,
-  submittedAnswer: null
-};
+    score: 0,
+    roundScore: 0,
+    socketId: null,
+    lastAnswer: null,
+    pendingAnswer: null,
+    submittedAnswer: null
+  };
 }
 
 let timerHandle = null;
@@ -163,41 +164,36 @@ socket.on("admin-auth", (token) => {
 
 });
 
-  socket.on("join-team", (teamId) => {
+  socket.on("join-team", (teamName) => {
 
-    console.log("Join request:", teamId);
+    let freeTeam = null;
 
-    if (!state.teams[teamId]) {
+    for(let i=1;i<=16;i++){
 
-        console.log("Invalid team:", teamId);
+        if(!state.teams[i].connected){
+            freeTeam = i;
+            break;
+        }
+    }
 
+    if(!freeTeam){
+
+        socket.emit("league-full");
         return;
     }
 
-    console.log(
-        "Connected status:",
-        state.teams[teamId].connected
+    state.teams[freeTeam].connected = true;
+    state.teams[freeTeam].socketId = socket.id;
+    state.teams[freeTeam].name = teamName;
+
+    socket.teamId = freeTeam;
+
+    socket.emit(
+        "team-joined",
+        teamName
     );
 
-    if (state.teams[teamId].connected) {
-
-        console.log("Team already taken");
-
-        socket.emit("team-taken");
-
-        return;
-    }
-
-    state.teams[teamId].connected = true;
-state.teams[teamId].socketId = socket.id;
-
-socket.teamId = teamId;
-
-socket.emit("team-joined");
-
-console.log("Team joined:", teamId);
-
-broadcastState();
+    broadcastState();
 });
 
   socket.on("submit-answer", (answer) => {

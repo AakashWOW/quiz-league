@@ -156,7 +156,7 @@ if(team.lastAnswer === "wrong"){
 
     teamsHTML += `
     <div class="team-card ${cardClass}">
-        <h3>Team ${team.id}</h3>
+        <h3>${team.name || ("Team " + team.id)}</h3>
 
         ${imageHTML}
 
@@ -194,7 +194,7 @@ sorted.forEach((team,index)=>{
     lb += `
     <tr>
         <td>${index + 1}</td>
-        <td>Team ${team.id}</td>
+        <td>${team.name || ("Team " + team.id)}</td>
         <td>${team.score}</td>
     </tr>
     `;

@@ -1,38 +1,27 @@
 const socket = io();
 
 let currentTeam = null;
+let currentTeamName = "";
 
 let joinedSuccessfully = false;
 
 let currentAnswer = null;
 let selectedAnswer = null;
 
-for(let i=1;i<=16;i++){
-
-    const option=document.createElement("option");
-
-    option.value=i;
-    option.textContent="Team "+i;
-
-    document.getElementById("teamSelect")
-    .appendChild(option);
-}
-
 function joinTeam(){
 
-    const team =
-    document.getElementById("teamSelect").value;
+    const teamName =
+    document.getElementById("teamName").value.trim();
 
-    if(!team){
-        alert("Select a team");
+    if(!teamName){
+
+        alert("Enter a team name");
         return;
     }
 
-    currentTeam = Number(team);
-
     socket.emit(
         "join-team",
-        currentTeam
+        teamName
     );
 }
 
@@ -183,7 +172,7 @@ socket.on("team-taken",()=>{
 
 });
 
-socket.on("team-joined", () => {
+socket.on("team-joined", (teamName) => {
 
     console.log("TEAM JOINED EVENT RECEIVED");
 
@@ -194,8 +183,8 @@ socket.on("team-joined", () => {
     .style.display = "block";
 
     document.getElementById("teamLabel")
-    .textContent =
-    "Team " + currentTeam;
+.textContent =
+teamName;
 });
 
 socket.on("quiz-reset", () => {
