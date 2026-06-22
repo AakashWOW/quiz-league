@@ -205,3 +205,9 @@ socket.on("quiz-reset", () => {
     .textContent = "15";
 
 });
+
+socket.on("quiz-reset", () => {
+
+    location.reload();
+
+});

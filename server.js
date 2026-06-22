@@ -388,6 +388,10 @@ team.lastAnswer = null;
 team.pendingAnswer = null;
 team.submittedAnswer = null;
 
+team.name = "";
+team.connected = false;
+team.socketId = null;
+
         // KEEP TEAMS CONNECTED
         // Do NOT touch:
         // team.connected
