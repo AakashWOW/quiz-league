@@ -1,5 +1,53 @@
 const socket=io();
 
+let scoreChart;
+
+window.onload = () => {
+
+    const ctx =
+    document.getElementById("scoreChart");
+
+    scoreChart = new Chart(ctx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: [],
+
+            datasets: [{
+                label: "Score",
+                data: []
+            }]
+        },
+
+        options: {
+
+    responsive: true,
+
+    scales: {
+
+        x: {
+            ticks: {
+                font: {
+                    size: 18
+                }
+            }
+        },
+
+        y: {
+            beginAtZero: true,
+            ticks: {
+                font: {
+                    size: 16
+                }
+            }
+        }
+    }
+}
+    });
+};
+
 socket.emit(
     "admin-auth",
     "cyberworldcup-admin-token"
@@ -103,108 +151,41 @@ socket.on("state-update",(state)=>{
     }
 }
 
-    let teamsHTML="";
+    const labels = [];
+const scores = [];
+const colors = [];
 
-Object.values(state.teams)
-.forEach(team=>{
+Object.values(state.teams).forEach(team => {
 
-    let cardClass = "";
-let status = "Offline";
-
-let imageHTML = `
-<div class="team-icon">⚫</div>
-`;
-
-if(team.connected){
-    cardClass = "connected";
-    status = "Connected";
-
-    imageHTML = `
-    <div class="team-icon">🔵</div>
-    `;
-}
-
-if(team.lastAnswer === "correct"){
-    cardClass = "correct";
-    status = "Correct";
-
-    imageHTML = `
-    <div class="team-icon">
-        <img
-            src="/images/correct.png"
-            alt="Correct"
-            class="result-image"
-        >
-    </div>
-    `;
-}
-
-if(team.lastAnswer === "wrong"){
-    cardClass = "wrong";
-    status = "Wrong";
-
-    imageHTML = `
-    <div class="team-icon">
-        <img
-            src="/images/wrong.png"
-            alt="Wrong"
-            class="result-image"
-        >
-    </div>
-    `;
-}
-
-    teamsHTML += `
-    <div class="team-card ${cardClass}">
-        <h3>${team.name || ("Team " + team.id)}</h3>
-
-        ${imageHTML}
-
-        <div>${status}</div>
-
-        <div class="team-score">
-            ${team.roundScore} pts
-        </div>
-    </div>
-    `;
-});
-
-document
-.getElementById("teamGrid")
-.innerHTML = teamsHTML;
-
-    const sorted=
-    Object.values(state.teams)
-    .sort(
-      (a,b)=>
-      b.score-a.score
+    labels.push(
+        team.name || ("Team " + team.id)
     );
 
-    let lb = `
-<table style="width:100%;border-collapse:collapse;">
-<tr>
-    <th>Rank</th>
-    <th>Team</th>
-    <th>Score</th>
-</tr>
-`;
+    scores.push(team.score);
 
-sorted.forEach((team,index)=>{
+    if(team.lastAnswer === "correct"){
 
-    lb += `
-    <tr>
-        <td>${index + 1}</td>
-        <td>${team.name || ("Team " + team.id)}</td>
-        <td>${team.score}</td>
-    </tr>
-    `;
+        colors.push("#22c55e");
+    }
+    else if(team.lastAnswer === "wrong"){
+
+        colors.push("#ef4444");
+    }
+    else{
+
+        colors.push("#3b82f6");
+    }
 });
 
-lb += "</table>";
+scoreChart.data.labels = labels;
 
-document
-.getElementById("leaderboard")
-.innerHTML = lb;
+scoreChart.data.datasets[0].data =
+scores;
+
+scoreChart.data.datasets[0].backgroundColor =
+colors;
+
+scoreChart.update();
 });
 
 socket.on("quiz-finished",(leaderboard)=>{
